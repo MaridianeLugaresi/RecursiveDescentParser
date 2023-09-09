@@ -26,49 +26,9 @@
 #define TK_Fim_Arquivo 19
 #define TKChar 20
 #define TKDouble 21
-struct
-{
-    char id[20];
-    int t;
-} TabSimb[20];
-int tamTS = 0;
-
-int buscaTS(char id[])
-{
-    int i;
-    for (i = 0; i < tamTS; i++)
-    {
-        if (strcmp(id, TabSimb[i].id) == 0)
-        {
-            printf("Variavel %s ja reconhecida com tipo %d\n", TabSimb[i].id, TabSimb[i].t);
-            return 1;
-        }
-    }
-    return 0;
-}
-
-void insereTS(char id[], int tipo)
-{
-    if (buscaTS(id))
-    {
-        return;
-    }
-    strcpy(TabSimb[tamTS].id, id);
-    TabSimb[tamTS].t = tipo;
-    tamTS++;
-}
-
-/***********************************************************************************/
-/*                                                                                 */
-/*  INICIO DO LEXICO - Nao entre a nao ser que tenha interesse pessoal em lexicos  */
-/*                                                                                 */
-/***********************************************************************************/
-
-int linlex = 0, collex = 1;
 
 // lista de strings correspondentes a cada token para colocar em mensagens de depuracao. Deve
 // estar na mesma ordem da lista de defines
-
 char tokens[][20] = {"", "TK_id",
                      "TK_void",
                      "TK_int",
@@ -90,6 +50,47 @@ char tokens[][20] = {"", "TK_id",
                      "TK_Fim_Arquivo",
                      "TK_Char",
                      "TK_Double"};
+struct
+{
+    char id[20];
+    int t;
+} TabSimb[20];
+
+int tamTS = 0;
+
+int buscaTS(char id[])
+{
+    int i;
+    for (i = 0; i < tamTS; i++)
+    {
+        if (strcmp(id, TabSimb[i].id) == 0)
+        {
+            printf("Variavel %s ja reconhecida com tipo %s\n", TabSimb[i].id, tokens[TabSimb[i].t]);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int insereTS(char id[], int tipo)
+{
+    if (buscaTS(id))
+    {
+        return 0;
+    }
+    strcpy(TabSimb[tamTS].id, id);
+    TabSimb[tamTS].t = tipo;
+    tamTS++;
+    return 1;
+}
+
+/***********************************************************************************/
+/*                                                                                 */
+/*  INICIO DO LEXICO - Nao entre a nao ser que tenha interesse pessoal em lexicos  */
+/*                                                                                 */
+/***********************************************************************************/
+
+int linlex = 0, collex = 1;
 
 FILE *arqin;
 int token;
@@ -103,9 +104,9 @@ struct pal_res
 struct pal_res lista_pal[] = {{"void", TKVoid},
                               {"int", TKInt},
                               {"float", TKFloat},
-                              {"fimtabela", TKId},
                               {"char", TKChar},
-                              {"double", TKDouble}};
+                              {"double", TKDouble},
+                              {"fimtabela", TKId}};
 
 int palavra_reservada(char lex[])
 {
@@ -280,7 +281,9 @@ int L(int LTipo)
     int L1Tipo;
     if (token == TKId)
     {
-        insereTS(lex, LTipo);
+        if(!insereTS(lex, LTipo)){
+            return 0;
+        };
         printf("Reconheci a variavel %s como %s\n", lex, tokens[token]);
         token = le_token();
         if (token == TKVirgula)
@@ -331,7 +334,6 @@ int D()
 
 int Ldec()
 {
-    printf("Token: %s \n", tokens[token]);
     if (token != TKInt && token != TKFloat && token != TKChar && token != TKDouble)
         return 1;
     if (D())
