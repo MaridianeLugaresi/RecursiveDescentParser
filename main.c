@@ -24,7 +24,8 @@
 #define TKFechaColch 17
 #define TKString 18
 #define TK_Fim_Arquivo 19
-
+#define TKChar 20
+#define TKDouble 21
 struct
 {
     char id[20];
@@ -86,7 +87,9 @@ char tokens[][20] = {"", "TK_id",
                      "TK_Abre_Colch",
                      "TK_Fecha_Colch",
                      "TK_String",
-                     "TK_Fim_Arquivo"};
+                     "TK_Fim_Arquivo",
+                     "TK_Char",
+                     "TK_Double"};
 
 FILE *arqin;
 int token;
@@ -100,7 +103,9 @@ struct pal_res
 struct pal_res lista_pal[] = {{"void", TKVoid},
                               {"int", TKInt},
                               {"float", TKFloat},
-                              {"fimtabela", TKId}};
+                              {"fimtabela", TKId},
+                              {"char", TKChar},
+                              {"double", TKDouble}};
 
 int palavra_reservada(char lex[])
 {
@@ -276,7 +281,7 @@ int L(int LTipo)
     if (token == TKId)
     {
         insereTS(lex, LTipo);
-        printf("Reconheci a variavel %s como %d\n", lex, LTipo);
+        printf("Reconheci a variavel %s como %s\n", lex, tokens[token]);
         token = le_token();
         if (token == TKVirgula)
         {
@@ -301,7 +306,7 @@ int L(int LTipo)
 
 int T(int *TTipo)
 {
-    if (token == TKInt || token == TKFloat)
+    if (token == TKInt || token == TKFloat || token == TKChar || token == TKDouble)
     {
         *TTipo = token;
         printf("Reconheci tipo %s\n", tokens[token]);
@@ -326,7 +331,8 @@ int D()
 
 int Ldec()
 {
-    if (token != TKInt && token != TKFloat)
+    printf("Token: %s \n", tokens[token]);
+    if (token != TKInt && token != TKFloat && token != TKChar && token != TKDouble)
         return 1;
     if (D())
         if (Ldec())
