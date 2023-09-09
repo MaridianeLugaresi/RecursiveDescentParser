@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include <conio.h>
+//#include <conio.h>
 #include <stdlib.h>
 
 // Lista de tokens reconhecidos e seus codigos numericos
@@ -26,6 +26,7 @@
 #define TK_Fim_Arquivo 19
 #define TKChar 20
 #define TKDouble 21
+#define TKVetor 22
 
 // lista de strings correspondentes a cada token para colocar em mensagens de depuracao. Deve
 // estar na mesma ordem da lista de defines
@@ -49,7 +50,8 @@ char tokens[][20] = {"", "TK_id",
                      "TK_String",
                      "TK_Fim_Arquivo",
                      "TK_Char",
-                     "TK_Double"};
+                     "TK_Double",
+                     "TK_Vetor"};
 struct
 {
     char id[20];
@@ -196,12 +198,14 @@ int le_token()
             if (c == '[')
             {
                 c = le_char();
-                return TKAbreColch;
+                estado = 4;
+                break;
             }
             if (c == ']')
             {
                 c = le_char();
-                return TKFechaColch;
+                estado = 4;
+                break;
             }
             if (c == '"')
             {
@@ -260,6 +264,36 @@ int le_token()
                 estado = 0;
                 lex[pos] = '\0';
                 return TKString;
+            }
+        case 4: // Vetor
+            if (c >= '0' && c <= '9')
+            {
+                lex[pos++] = c;
+                c = le_char();
+                break;
+            }else if(c == TKFechaColch){
+                lex[pos++] = c;
+                return TKVetor;
+            }else{
+                estado = 5;
+                break;
+            }
+
+        case 5: // Matriz
+            if(c == TKFechaColch){
+                lex[pos++] = c;
+                c = le_char();
+                if(c == TKAbreColch){
+                    lex[pos++] = c;
+                    c = le_char();
+                    break;
+                }else{
+                    // Deu erro no reconhecimento
+                    return 0;
+                }
+            }else{
+                // Deu erro no reconhecimento
+                return 0;
             }
         }
     }
@@ -345,7 +379,7 @@ int Ldec()
 int main()
 {
     char c;
-    if ((arqin = fopen("C:\\Projetos\\RecursiveDescentParser\\declaracoes.c", "rt")) == NULL)
+    if ((arqin = fopen("/Users/augusto/Projects/RecursiveDescentParser/declaracoes.c", "rt")) == NULL)
     {
         printf("Erro na abertura do arquivo");
         exit(0);

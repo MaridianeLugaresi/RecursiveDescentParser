@@ -1,3 +1,4 @@
 int i,j;
-float i;
+float k;
 char b[1];
+int c[1];
