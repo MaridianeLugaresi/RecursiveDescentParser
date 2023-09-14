@@ -1,6 +1,5 @@
 #include <string.h>
 #include <stdio.h>
-//#include <conio.h>
 #include <stdlib.h>
 
 // Lista de tokens reconhecidos e seus codigos numericos
@@ -26,7 +25,6 @@
 #define TK_Fim_Arquivo 19
 #define TKChar 20
 #define TKDouble 21
-#define TKVetor 22
 
 // lista de strings correspondentes a cada token para colocar em mensagens de depuracao. Deve
 // estar na mesma ordem da lista de defines
@@ -50,8 +48,7 @@ char tokens[][20] = {"", "TK_id",
                      "TK_String",
                      "TK_Fim_Arquivo",
                      "TK_Char",
-                     "TK_Double",
-                     "TK_Vetor"};
+                     "TK_Double"};
 struct
 {
     char id[20];
@@ -268,33 +265,26 @@ int le_token()
         case 4: // Vetor
             if (c >= '0' && c <= '9')
             {
-                lex[pos++] = c;
+                lex[0] = c;
                 c = le_char();
-                break;
-            }else if(c == TKFechaColch){
-                lex[pos++] = c;
-                return TKVetor;
-            }else{
+                pos = 1;
                 estado = 5;
                 break;
             }
 
-        case 5: // Matriz
-            if(c == TKFechaColch){
+        case 5:
+            if (c >= '0' && c <= '9')
+            {
                 lex[pos++] = c;
                 c = le_char();
-                if(c == TKAbreColch){
-                    lex[pos++] = c;
-                    c = le_char();
-                    break;
-                }else{
-                    // Deu erro no reconhecimento
-                    return 0;
-                }
-            }else{
-                // Deu erro no reconhecimento
-                return 0;
+                break;
+            }else if(c == ']'){
+                estado = 0;
+                lex[pos] = '\0';
+                c = le_char();
+                break;
             }
+
         }
     }
 }

@@ -1,4 +1,3 @@
-int i,j;
-float k;
-char b[1];
-int c[1];
+float k, r[1];
+char a[2][2];
+int a;
