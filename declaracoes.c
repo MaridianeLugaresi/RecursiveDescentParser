@@ -1,3 +1,3 @@
-float k, r[1];
+float kK, r[1];
 char a[2][2];
-int a;
+int x;

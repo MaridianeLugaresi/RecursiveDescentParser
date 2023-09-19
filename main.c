@@ -308,7 +308,9 @@ int L(int LTipo)
         if(!insereTS(lex, LTipo)){
             return 0;
         };
-        printf("Reconheci a variavel %s como %s\n", lex, tokens[token]);
+
+        //printf("Reconheci a variavel %s como %s\n", lex, tokens[token]);
+
         token = le_token();
         if (token == TKVirgula)
         {
@@ -333,10 +335,12 @@ int L(int LTipo)
 
 int T(int *TTipo)
 {
+
     if (token == TKInt || token == TKFloat || token == TKChar || token == TKDouble)
     {
         *TTipo = token;
-        printf("Reconheci tipo %s\n", tokens[token]);
+        //printf("Reconheci tipo %s\n", tokens[token]);
+
         token = le_token();
         return 1;
     }
@@ -366,6 +370,22 @@ int Ldec()
     return 0;
 }
 
+void imprime_reconhecimento(){
+
+    int l_i;
+
+    printf("\n");
+
+    printf("----- RESUMO DA LEITURA -----\n");
+
+    for(l_i=0;l_i<tamTS;l_i++){
+        printf("%s - %s\n", TabSimb[l_i].id, tokens[TabSimb[l_i].t]);
+    }
+
+    printf("\n");
+
+}
+
 int main()
 {
     char c;
@@ -379,6 +399,9 @@ int main()
         printf("Reconheceu tudo\n");
     else
         printf("Erro no reconhecimento\n");
+
+    imprime_reconhecimento();
+
     fclose(arqin);
     system("pause");
 }
